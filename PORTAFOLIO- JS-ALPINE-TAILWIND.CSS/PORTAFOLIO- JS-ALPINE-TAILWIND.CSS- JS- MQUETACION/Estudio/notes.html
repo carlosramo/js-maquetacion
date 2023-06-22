@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To Do List</title>
+    <link href="/build/tailwind.css" rel="stylesheet">
+    <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
+</head>
+<body class="font-Montse">
+  <div class="container mx-auto mt-14 md:max-w-xl pr-6">
+    <main class="main" x-data="todos()" x-init="init()">
+      <div class="mb-10 mt-6 text-4xl font-bold text-negro text-center">
+        <h1>#todo</h1>
+      </div>
+      <div class="flex flex-row justify-center border-b border-gris_borde">
+        <div class="text-sm  font-semibold">
+          <span x-text="todos.length"></span>
+          <span>Items </span>
+        </div>
+        <button x-on:click = "flag =  false" class="mx-14 text-sm  font-semibold active hover: border-b-2  hover:border-blue-500 focus:border-b-2 focus:border-blue-500 " type="button" @click="setFilter(0)">
+          All
+        </button>
+        <button x-on:click = "flag =  false" class="mx-14 text-sm font-semibold active hover: border-b-2 hover:border-blue-500 focus:border-b-4 focus:border-blue-500" type="button" @click="setFilter(1)">
+          Active
+        </button>
+        <button x-on:click = "flag = true  " class="mx-14 text-sm  font-semibold active: hover: border-b-2 hover:border-blue-500 focus:border-b-4 focus:border-blue-500" type="button" @click="setFilter(2)">
+          Completed
+        </button>
+      </div>
+      <div class="mb-3">
+        <input
+          type="text"
+          placeholder="add details"
+          class="border border-gris_borde rounded-xl mt-5 w-9/12 h-14 pl-3"
+          :class="{ 'is-empty': !todos.length }"
+          x-model="task"
+          @keydown.enter="addTask()"
+        />
+        <button x-on:click="addTask" class="bg-blue-500 text-white w-28 ml-5 h-14 rounded-xl">Add</button>
+      </div>
+      <template x-for="(todo, index) in filteredTodos" :key="index">
+        <ul>
+          <li
+            class=" mb-3 mt-6 flex flex-row"
+            :key="index"
+            :class="{ 'is-complete': todo.isComplete === true, 'is-editing': todo.isEditing === true, }"
+          >
+            <div class="">
+              <input type="checkbox" x-model="todo.isComplete" class="w-6 h-6" />
+            </div>
+            <input
+              type="text"
+              class=""
+              :x-ref="index"
+              x-show="todo.isEditing"
+              x-model="todo.task"
+              @blur="setIsEditingTask(index, false)"
+              @keydown.enter="setIsEditingTask(index, false)"
+            />
+            <!-- <div>
+              <p x-text="todo.todo" :class="{ 'line-through': todos.iscomplete } "></p>
+            </div> -->
+            <label
+              class="ml-2 text-lg font-medium text-black"
+              x-show="!todo.isEditing"
+              x-text="todo.task"
+              @dblclick="setIsEditingTask(index, true)"
+            ></label>
+            <div class="">
+              <button
+                x-show="flag"
+                class="relative left-64"
+                type="button"
+                @click="removeTask(index)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+
+                        stroke="currentColor" class="w-6 h-6 text-red-800">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                      </svg>
+              </button>
+            </div>
+          </li>
+        </ul>
+      </template>
+      <div class="flex flex-row mt-5" x-show.transition.duration.500ms="todos.length">
+        <div class="bg-red-500 rounded-md w-20 text-center h-8">
+          <button class=" text-white mt-1" type="button" @click="reset()">
+            Vaciar
+          </button>
+        </div>
+        <div class="ml-10" x-show.transition.duration.500ms="todos.length">
+          <div class="bg-blue-500 rounded-md w-72 text-center h-8">
+            <button class="text-white">Check para seleccionar todos
+              <input type="checkbox" x-model="isCompleteAll" class="w-5 h-5 ml-2 relative top-1.5"/>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="./content.js"></script>
+  </div>
+</body>
+</html>

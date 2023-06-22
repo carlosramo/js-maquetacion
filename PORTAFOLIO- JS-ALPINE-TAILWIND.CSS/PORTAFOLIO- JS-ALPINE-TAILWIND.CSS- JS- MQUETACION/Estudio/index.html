@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/weather.js" defer></script>
+    <script defer src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="/build/tailwind.css">
+    <link rel="stylesheet" href="/css/tailwind.css">
+    <title>THE WEATHER</title>
+  </head>
+  <body>
+    <section class="font-raleway lg:flex lg:flex-row" x-data="WeatherGet()" x-init="InitAPI(0)">
+      <div x-show="!open" class="lg:w-[459px] lg:h-[721px] bg-fondo-clima">
+        <div class="flex flex-row">
+          <div x-on:click="open = !open" class="" >
+            <button class="ml-12 mt-10 px-8 py-2 bg-gray3 text-white">Search for places</button>
+          </div> 
+          <div class="lg:ml-28 mt-11 ml-16">
+            <svg class="w-8 h-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.115 5.19l.319 1.913A6 6 0 008.11 10.36L9.75 12l-.387.775c-.217.433-.132.956.21 1.298l1.348 1.348c.21.21.329.497.329.795v1.089c0 .426.24.815.622 1.006l.153.076c.433.217.956.132 1.298-.21l.723-.723a8.7 8.7 0 002.288-4.042 1.087 1.087 0 00-.358-1.099l-1.33-1.108c-.251-.21-.582-.299-.905-.245l-1.17.195a1.125 1.125 0 01-.98-.314l-.295-.295a1.125 1.125 0 010-1.591l.13-.132a1.125 1.125 0 011.3-.21l.603.302a.809.809 0 001.086-1.086L14.25 7.5l1.256-.837a4.5 4.5 0 001.528-1.732l.146-.292M6.115 5.19A9 9 0 1017.18 4.64M6.115 5.19A8.965 8.965 0 0112 3c1.929 0 3.716.607 5.18 1.64" />
+            </svg>            
+          </div>
+        </div>
+        <div class="absolute left-[325px] ">
+          <img class="w-28 h-28 opacity-5" src="/img/nube_1.png" alt="">
+        </div>
+        <div class="absolute left-[325px] top-64">
+          <img class="lg:w-28 lg:h-28 opacity-5" src="/img/nube_2.png" alt="">
+        </div>
+        <div class="">
+          <img class="absolute w-36 h-32 opacity-5 right-[1470px]" src="/img/HeavyCloud.png" alt="">
+        </div>
+        <div class="">
+          <img class="absolute top-52 w-44 h-36 opacity-5 right-[1450px]" src="/img/HeavyCloud.png" alt="">
+        </div>
+        <div class="relative top-20 lg:ml-32 ml-28">
+          <img class="relative w-48 h-48" src="/img/Shower.png" alt="">
+        </div>
+        <div class="text-center mt-32 flex flex-row justify-center text-blanco-gris">
+          <h1 x-text="gradientCalc(data.temp)"  class="text-7xl"></h1>
+          <h2 x-text="gradientType" class="text-3xl pt-8"></h2>
+        </div>
+        <div class="lg:mt-14 mt-8 text-center">
+          <h2 class="text-3xl text-texto-gris">Shower</h2>
+        </div>
+        <div class="text-center lg:mt-16 mt-12 text-fuente-footer-pais">
+          <p class="">Today</p>
+          <span x-text="weekToday(data.fecha1)"></span>
+
+        </div>
+        <div class="justify-center mt-3 flex flex-row lg:pb-0 pb-10">
+          <svg class="w-6 h-6 text-fuente-footer-pais" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+          </svg>          
+          <p x-text="data.city" class="text-fuente-footer-pais"></p>
+        </div>   
+      </div>
+
+      <div x-show="open" class="lg:w-[459px] lg:h-[721px] bg-fondo-clima">
+        <div class="mr-24 text-center">
+          <input x-model="search"  type="text" placeholder="search location" class="mt-10 pl-11 w-68 h-12 bg-fondo-clima border-solid border-2 border-white text-white" >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="relative bottom-9 lg:left-16 left-10 w-6 h-6 text-blanco-gris">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+          </svg>          
+        </div>
+        <div class="px-10 mt-12 divide-y divide-gray1">
+          <template x-for="(country, index) in filteredfullData">
+            <button x-text="country.city" x-on:click="selectCountry(index)" class=" pl-2 text-left w-full h-12 text-white"></button>
+          </template>
+        </div>
+      </div>
+
+      <div class="lg:w-[1100px] lg:h-[721px] bg-fondo-oscuro lg:flex lg:flex-col lg:pr-32 lg:pl-40 pr-5 pl-5">
+        <div class="flex flex-row justify-end">
+          <div class="" >
+            <button x-on:click="selectGradient('°C')" class="rounded-full mt-10 px-3 py-2 bg-gray3 text-white">°C</button>
+          </div>
+          <div class="" >
+            <button x-on:click="selectGradient('°F')" class="rounded-full ml-5 mt-10 px-3 py-2 bg-gray3 text-white">°F</button>
+          </div> 
+        </div>
+
+        <div class="lg:flex flex-row grid grid-cols-2 gad-2 lg:px-0 text-blanco-gris lg:ml-0 ml-10">
+          <template x-for="day in data.days">
+              <div class="lg:w-40 mr-5 ustify-between lg:h-44 w-32 h-40 bg-fondo-clima lg:mt-7 mt-3 lg:mt-0 text-center">
+                  <span x-text="weekCalc(day.date)" class="text-xs font-medium text-clima_cen" ></span>
+                  <img class="w-400 h-20 mx-auto mb-3" x-bind:src="getImage(day.temp)" alt="Featured Photo">
+                  <div class="lg:mt-7">
+                    <span class="" x-text="gradientCalc(day.temp)" class="text-base font-medium text-clima_cen"></span>
+                    <span x-text="gradientType" class="text-base font-medium text-clima_cen"></span>
+                  </div>
+              </div>
+          </template>
+        </div>
+        <div class="mt-2 text-blanco-gris">
+          <h2 class="text-2xl">Today's Hightlights</h2>
+        </div>
+        <div class="lg:flex lg:flex-row mt-5 justify-center text-center text-blanco-gris">
+          <div class="lg:w-96 lg:h-40 bg-fondo-clima">
+            <div class="mt-3">
+              <h3>Wind status</h3>
+            </div>
+            <div class="mt-3 flex flex-row justify-center">
+                <h2 x-text="data.windstatus" class="text-6xl  text-blanco-gris"></h2>
+                <p class="ml-2 text-3xl pt-5">pmh</p>
+            </div>
+            <div class="mt-6 flex flex-row justify-center text-center">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class=" w-5 h-4 mt-1">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+              </svg>
+              <p class="ml-3 text-xs pt-1">WSW</p>              
+            </div>
+          </div>
+          <div class="lg:w-96 lg:h-40 h-36 lg:ml-14 ml-0 bg-fondo-clima">
+            <div class="mt-3">
+              <h3>Humidity</h3>
+            </div>
+            <div class="flex flex-row justify-center">
+                <h2 x-text="data.Humidity" class="text-6xl text-blanco-gris"></h2>
+                <p class="ml-2 text-3xl pt-5">%</p>
+            </div>
+            <div class="mt-3 flex justify-between">
+              <span class="text-xs ml-12 font-medium text-blue-700 dark:text-white">0</span>
+              <span class="text-xs font-medium text-blue-700 dark:text-white">50</span>
+              <span class="text-xs mr-12 font-medium text-blue-700 dark:text-white">100</span>
+            </div>
+            <div class="w-9/12 ml-12 bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+              <div class="bg-yellow-300 h-2.5 rounded-full" :style="`width: ${data.Humidity}%`"></div>
+            </div>
+          </div>
+          
+
+        </div>
+        <div class="lg:flex lg:flex-row mt-9 justify-center text-center text-blanco-gris ">
+          <div class="lg:w-96 lg:h-28 bg-fondo-clima">
+            <div class="mt-3">
+              <h3>Visibility</h3>
+            </div>
+            <div class="flex flex-row justify-center">
+                <h2 x-text="data.Visibility" class="text-6xl"></h2>
+                <p class="ml-2 text-3xl pt-5">miles</p>
+            </div>
+          </div>
+          <div class="lg:w-96 lg:h-28 lg:ml-14 ml-0 bg-fondo-clima">
+            <div class="mt-3">
+              <h3>Air Pressure</h3>
+            </div>
+            <div class="flex flex-row justify-center">
+                <h2 x-text="data.airpressure" class="text-6xl"></h2>
+                <p class="ml-2 text-3xl pt-5">mb</p>
+            </div>
+          </div>
+        </div>
+        <footer class="bg-fondo-oscuro text-center mt-10">
+          <p class="text-gray3 text-sm">Created by Omnipro - devChallenges.io</p>
+        </footer>
+
+      </div>
+    </section>
+  </body>
+</html> 
